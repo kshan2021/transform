@@ -6,7 +6,7 @@ bVerbose = false; %display more intermediate images?
 if ispc %for Windows platform
     rootDir = "C:/Warwick/Autoplex/";
 else %isunix or ismac
-    rootDir = "~Autoplex/";
+    rootDir = "~/Autoplex/";
 end
 RefImg_Ms{1} = imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch1_main_20211010080000_20211010090000.mp4-vlcsnap-2022-02-08-10h20m30s042.jpg");
 RefImg_Ms{2} = imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch2_main_20211010080000_20211010090000.mp4-vlcsnap-2022-02-08-10h37m38s785.jpg");
