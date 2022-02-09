@@ -1,16 +1,18 @@
 
-selectPoints = [1 1 1 1 1 0 0 0 0 0]; %select ref points if selectPoints element is 1
+selectPoints = [0 0 0 0 0 0 0 0 0 0]; %select ref points if selectPoints element is 1
 
-RefImg_Ms{1} = imread("NVR_ch1_main_20210819120000_20210819130000-vlcsnap-2021-11-16-12h34m53s112.jpg");
-RefImg_Ms{2} = imread("NVR_ch2_main_20210711120000_20210711130000.mp4-vlcsnap-2021-08-18-22h19m29s318.jpg");
-RefImg_Ms{3} = imread("NVR_ch3_main_20210819120001_20210819130001-vlcsnap-2021-11-16-12h51m52s887.jpg");
-RefImg_Ms{4} = imread("NVR_ch4_main_20210621140001_20210621145916.mp4-vlcsnap-2021-08-19-09h14m48s594.jpg");
-RefImg_Ms{5} = imread("NVR_ch5_main_20210819120002_20210819130002-vlcsnap-2021-11-16-12h52m43s665.jpg");
-RefImg_Ms{6} = imread("NVR_ch6_main_20210619130002_20210619140002-vlcsnap-2021-08-09-15h03m07s754.jpg");
-RefImg_Ms{7} = imread("NVR_ch7_main_20210605110003_20210605120003-vlcsnap-2021-08-04-12h04m53s488.jpg");
-RefImg_Ms{8} = imread("NVR_ch8_main_20210619130003_20210619140003-vlcsnap-2021-08-09-15h44m20s478.jpg");
-RefImg_Ms{9} = imread("NVR_ch9_main_20210605110004_20210605120004-vlcsnap-2021-07-21-11h01m54s560.jpg");
-RefImg_Ms{10} = imread("NVR_ch10_main_20210624100004_20210624110004.mp4-vlcsnap-2021-08-24-09h01m10s597.jpg");
+bVerbose = false; %display more intermediate images?
+
+RefImg_Ms{1} = imread("~/Autoplex/Data Annotation/Stills/Clear Road/NVR_ch1_main_20211010080000_20211010090000.mp4-vlcsnap-2022-02-08-10h20m30s042.jpg");
+RefImg_Ms{2} = imread("~/Autoplex/Data Annotation/Stills/Clear Road/NVR_ch2_main_20211010080000_20211010090000.mp4-vlcsnap-2022-02-08-10h37m38s785.jpg");
+RefImg_Ms{3} = imread("~/Autoplex/Data Annotation/Stills/Clear Road/NVR_ch3_main_20211010080001_20211010090001.mp4-vlcsnap-2022-02-08-10h38m11s392.jpg");
+RefImg_Ms{4} = imread("~/Autoplex/Data Annotation/Stills/Clear Road/NVR_ch4_main_20211010080001_20211010090001.mp4-vlcsnap-2022-02-08-10h38m39s088.jpg");
+RefImg_Ms{5} = imread("~/Autoplex/Data Annotation/Stills/Clear Road/NVR_ch5_main_20211010080002_20211010090002.mp4-vlcsnap-2022-02-08-10h39m35s506.jpg");
+RefImg_Ms{6} = imread("~/Autoplex/Data Annotation/Stills/Clear Road/NVR_ch6_main_20211010080002_20211010090002.mp4-vlcsnap-2022-02-08-10h40m03s571.jpg");
+RefImg_Ms{7} = imread("~/Autoplex/Data Annotation/Stills/Clear Road/NVR_ch7_main_20211010080003_20211010090003.mp4-vlcsnap-2022-02-08-10h40m25s335.jpg");
+RefImg_Ms{8} = imread("~/Autoplex/Data Annotation/Stills/Clear Road/NVR_ch8_main_20211010080003_20211010090003.mp4-vlcsnap-2022-02-08-10h40m42s412.jpg");
+RefImg_Ms{9} = imread("~/Autoplex/Data Annotation/Stills/Clear Road/NVR_ch9_main_20211010080004_20211010090004.mp4-vlcsnap-2022-02-08-10h40m57s792.jpg");
+RefImg_Ms{10}= imread("~/Autoplex/Data Annotation/Stills/Clear Road/NVR_ch10_main_20211010080004_20211010090004.mp4-vlcsnap-2022-02-08-10h41m14s910.jpg");
 [~, total] = size(RefImg_Ms);
 
 figure;
@@ -18,13 +20,18 @@ MapImg_Ms=imread("Mapv2.png");
 imshow(MapImg_Ms);
 title('Mapv2 Img');
 
+
 MapoutputView = imref2d(size(MapImg_Ms));
 
 for i=1:total
     RefImgSize{i} = size(RefImg_Ms{i});
-    figure;
-    imshow(RefImg_Ms{i});
-    title("Ref Img " + num2str(i));
+
+    if bVerbose
+        figure;
+        imshow(RefImg_Ms{i});
+        title("Ref Img " + num2str(i));
+    end
+    
     x = 1;
     while ~isempty(x) %re-select ref points until user press Enter or Space
         movingPointsFile = "movingPoints_ch"+num2str(i) + ".mat";
@@ -60,14 +67,17 @@ for i=1:total
         imshowpair(MapImg_Ms, warpedImg{i}, "falsecolor");
         title("mapped "+num2str(i));
 
-        figure
-        imshowpair(MapImg_Ms, warpedImg{i}, "falsecolor");
-        [TedX, TedY] = transformPointsForward(MapTfrm{i}, [0 RefImgSize{i}(2)], [0 RefImgSize{i}(1)]);
-        TedX = max(0, TedX); TedY = max(0, TedY);
-        hold on
-        plot(TedX, TedY, 'go', "MarkerFaceColor", "g")
-        axis([min(TedX(1), TedX(2)), max(TedX(1), TedX(2)) min(TedY(1), TedY(2)) max(TedY(1), TedY(2))])
-        title("Current Transform Accuracy "+num2str(i));
+        if bVerbose
+            figure
+            imshowpair(MapImg_Ms, warpedImg{i}, "falsecolor");
+            [TedX, TedY] = transformPointsForward(MapTfrm{i}, [0 RefImgSize{i}(2)], [0 RefImgSize{i}(1)]);
+            TedX = max(0, TedX); TedY = max(0, TedY);
+            hold on
+            plot(TedX, TedY, 'go', "MarkerFaceColor", "g")
+            axis([min(TedX(1), TedX(2)), max(TedX(1), TedX(2)) min(TedY(1), TedY(2)) max(TedY(1), TedY(2))])
+            title("Current Transform Accuracy "+num2str(i));
+        end
+        
         if selectPoints(i) %need to re-select ref points
             x=input("press Enter or Space to continue, any other letter to re-select reference points...", 's');
         else
