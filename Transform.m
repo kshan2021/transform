@@ -77,7 +77,7 @@ for i=1:total
             axis([min(TedX(1), TedX(2)), max(TedX(1), TedX(2)) min(TedY(1), TedY(2)) max(TedY(1), TedY(2))])
             title("Current Transform Accuracy "+num2str(i));
         end
-        
+
         if selectPoints(i) %need to re-select ref points
             x=input("press Enter or Space to continue, any other letter to re-select reference points...", 's');
         else
@@ -86,13 +86,24 @@ for i=1:total
     end
 end
 
+%create an image with all value is 1
+imgNum = uint8(zeros(size(imbinarize(MapImg_Ms))));
+imgNum(:) = 1;
+imgNum = rgb2gray(imgNum); %greyscale image, vaue 1
+%binarize all refImg, and sum up
+for i=1:total
+       bw = uint8(im2bw(warpedImg{i}, 0.0001)); %binary image value 0,1
+       imgNum = imadd(imgNum, bw); %greyscale image. pixel value is number of non-zero pixels from all images.
+end
+imgNumRGB = cat(3, imgNum, imgNum, imgNum);
+
 %average multi images
 I = uint32(MapImg_Ms);
 for i = 1:total
-    I = imadd(I, uint32(warpedImg{i}));
+    I = imadd(I, uint32(warpedImg{i})); % each pixel is 32*3 bits
 end
 %total = index_b-index_a+1+1;  %total number of warped image + 1 map image
-I = uint8(I/5); % most area of warped image is dark, each pixel actually added only 1~3 non-zero values
+I = uint8(imdivide(I, uint32(imgNumRGB))); % most area of warped image is dark, each pixel actually added only 1~5 non-zero values
 figure
 imshow(I);
 title("overlaid images");
