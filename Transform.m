@@ -3,16 +3,21 @@ selectPoints = [0 0 0 0 0 0 0 0 0 0]; %select ref points if selectPoints element
 
 bVerbose = false; %display more intermediate images?
 
-RefImg_Ms{1} = imread("~/Autoplex/Data Annotation/Stills/Clear Road/NVR_ch1_main_20211010080000_20211010090000.mp4-vlcsnap-2022-02-08-10h20m30s042.jpg");
-RefImg_Ms{2} = imread("~/Autoplex/Data Annotation/Stills/Clear Road/NVR_ch2_main_20211010080000_20211010090000.mp4-vlcsnap-2022-02-08-10h37m38s785.jpg");
-RefImg_Ms{3} = imread("~/Autoplex/Data Annotation/Stills/Clear Road/NVR_ch3_main_20211010080001_20211010090001.mp4-vlcsnap-2022-02-08-10h38m11s392.jpg");
-RefImg_Ms{4} = imread("~/Autoplex/Data Annotation/Stills/Clear Road/NVR_ch4_main_20211010080001_20211010090001.mp4-vlcsnap-2022-02-08-10h38m39s088.jpg");
-RefImg_Ms{5} = imread("~/Autoplex/Data Annotation/Stills/Clear Road/NVR_ch5_main_20211010080002_20211010090002.mp4-vlcsnap-2022-02-08-10h39m35s506.jpg");
-RefImg_Ms{6} = imread("~/Autoplex/Data Annotation/Stills/Clear Road/NVR_ch6_main_20211010080002_20211010090002.mp4-vlcsnap-2022-02-08-10h40m03s571.jpg");
-RefImg_Ms{7} = imread("~/Autoplex/Data Annotation/Stills/Clear Road/NVR_ch7_main_20211010080003_20211010090003.mp4-vlcsnap-2022-02-08-10h40m25s335.jpg");
-RefImg_Ms{8} = imread("~/Autoplex/Data Annotation/Stills/Clear Road/NVR_ch8_main_20211010080003_20211010090003.mp4-vlcsnap-2022-02-08-10h40m42s412.jpg");
-RefImg_Ms{9} = imread("~/Autoplex/Data Annotation/Stills/Clear Road/NVR_ch9_main_20211010080004_20211010090004.mp4-vlcsnap-2022-02-08-10h40m57s792.jpg");
-RefImg_Ms{10}= imread("~/Autoplex/Data Annotation/Stills/Clear Road/NVR_ch10_main_20211010080004_20211010090004.mp4-vlcsnap-2022-02-08-10h41m14s910.jpg");
+if ispc %for Windows platform
+    rootDir = "C:/Warwick/Autoplex/";
+else %isunix or ismac
+    rootDir = "~Autoplex/";
+end
+RefImg_Ms{1} = imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch1_main_20211010080000_20211010090000.mp4-vlcsnap-2022-02-08-10h20m30s042.jpg");
+RefImg_Ms{2} = imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch2_main_20211010080000_20211010090000.mp4-vlcsnap-2022-02-08-10h37m38s785.jpg");
+RefImg_Ms{3} = imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch3_main_20211010080001_20211010090001.mp4-vlcsnap-2022-02-08-10h38m11s392.jpg");
+RefImg_Ms{4} = imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch4_main_20211010080001_20211010090001.mp4-vlcsnap-2022-02-08-10h38m39s088.jpg");
+RefImg_Ms{5} = imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch5_main_20211010080002_20211010090002.mp4-vlcsnap-2022-02-08-10h39m35s506.jpg");
+RefImg_Ms{6} = imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch6_main_20211010080002_20211010090002.mp4-vlcsnap-2022-02-08-10h40m03s571.jpg");
+RefImg_Ms{7} = imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch7_main_20211010080003_20211010090003.mp4-vlcsnap-2022-02-08-10h40m25s335.jpg");
+RefImg_Ms{8} = imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch8_main_20211010080003_20211010090003.mp4-vlcsnap-2022-02-08-10h40m42s412.jpg");
+RefImg_Ms{9} = imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch9_main_20211010080004_20211010090004.mp4-vlcsnap-2022-02-08-10h40m57s792.jpg");
+RefImg_Ms{10}= imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch10_main_20211010080004_20211010090004.mp4-vlcsnap-2022-02-08-10h41m14s910.jpg");
 [~, total] = size(RefImg_Ms);
 
 figure;
