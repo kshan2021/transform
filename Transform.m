@@ -20,10 +20,9 @@ RefImg_Ms{9} = imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch9_main_
 RefImg_Ms{10}= imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch10_main_20211010080004_20211010090004.mp4-vlcsnap-2022-02-08-10h41m14s910.jpg");
 [~, total] = size(RefImg_Ms);
 
-figure;
+fig_map=figure('Name','Map', 'NumberTitle','off');
 MapImg_Ms=imread("Mapv2.png");
 imshow(MapImg_Ms);
-title('Mapv2 Img');
 
 
 MapoutputView = imref2d(size(MapImg_Ms));
@@ -32,12 +31,12 @@ for i=1:total
     RefImgSize{i} = size(RefImg_Ms{i});
 
     if bVerbose
-        figure;
+        figure('Name', "Ref Img " + num2str(i), 'NumberTitle', 'off');
         imshow(RefImg_Ms{i});
-        title("Ref Img " + num2str(i));
+        title();
     end
     
-    x = 1;
+    x = 1; %'' selection completed, 0 re-select, 1 new select
     while ~isempty(x) %re-select ref points until user press Enter or Space
         movingPointsFile = "movingPoints_ch"+num2str(i) + ".mat";
         fixedPointsFile = "fixedPoints_ch"+num2str(i) + ".mat";
@@ -56,38 +55,55 @@ for i=1:total
             else %do not re-select ref points
                 movingPoints = load(movingPointsFile).movingPoints;
                 fixedPoints = load(fixedPointsFile).fixedPoints;
+                movingPoints_old = movingPoints; fixedPoints_old = fixedPoints; %no need to re-select
             end
         else
             [movingPoints, fixedPoints] = cpselect(RefImg_Ms{i}, MapImg_Ms, 'Wait', true);
             save(movingPointsFile, 'movingPoints')
             save(fixedPointsFile, 'fixedPoints')
+            movingPoints_old = [0 0]; fixedPoints_old = [0 0]; %new selection, will ask for re-select to confirm
         end
 
         MapTfrm{i} = fitgeotrans(movingPoints, fixedPoints, 'projective'); %nonreflectivesimilarity, similarity, affine, projective
         warpedImg{i} = imwarp(RefImg_Ms{i}, MapTfrm{i}, 'outputView', MapoutputView, 'interp', 'nearest');
-        figure;
+        if x==1 %new selection, create new figure
+            fig_warped = figure('Name',"warped "+num2str(i), 'NumberTitle','off');
+        else % x=0, re-select, use old figure
+            figure(fig_warped);
+        end
         imshow(warpedImg{i});
-        title("warped "+num2str(i))
-        figure
+        if x==1
+            fig_mapped = figure('Name',"mapped "+num2str(i), 'NumberTitle','off');
+        else
+            figure(fig_mapped)
+        end
         imshowpair(MapImg_Ms, warpedImg{i}, "falsecolor");
-        title("mapped "+num2str(i));
 
         if bVerbose
-            figure
+            if x==1
+                fig_accuracy = figure('Name',"Current Transform Accuracy "+num2str(i), 'NumberTitle','off');
+            else
+                figure(fig_accuracy)
+            end
             imshowpair(MapImg_Ms, warpedImg{i}, "falsecolor");
             [TedX, TedY] = transformPointsForward(MapTfrm{i}, [0 RefImgSize{i}(2)], [0 RefImgSize{i}(1)]);
             TedX = max(0, TedX); TedY = max(0, TedY);
             hold on
             plot(TedX, TedY, 'go', "MarkerFaceColor", "g")
             axis([min(TedX(1), TedX(2)), max(TedX(1), TedX(2)) min(TedY(1), TedY(2)) max(TedY(1), TedY(2))])
-            title("Current Transform Accuracy "+num2str(i));
         end
 
-        if selectPoints(i) %need to re-select ref points
-            x=input("press Enter or Space to continue, any other letter to re-select reference points...", 's');
+        %if selectPoints(i) %need to re-select ref points
+        %    x=input("press Enter or Space to continue, any other letter to re-select reference points...", 's');
+        %else
+        %    x='';
+        %end
+        
+        if isequal(movingPoints, movingPoints_old) && isequal(fixedPoints, fixedPoints_old)
+            x=''; %selection completed
         else
-            x='';
-        end
+            x=0; %need to select again
+        end        
     end
 end
 
@@ -109,7 +125,7 @@ for i = 1:total
 end
 %total = index_b-index_a+1+1;  %total number of warped image + 1 map image
 I = uint8(imdivide(I, uint32(imgNumRGB))); % most area of warped image is dark, each pixel actually added only 1~5 non-zero values
-figure
+figure;
 imshow(I);
 title("overlaid images");
 
