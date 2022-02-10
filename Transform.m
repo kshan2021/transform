@@ -21,7 +21,7 @@ RefImg_Ms{10}= imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch10_main
 [~, total] = size(RefImg_Ms);
 
 fig_map=figure('Name','Map', 'NumberTitle','off');
-MapImg_Ms=imread("Mapv2.png");
+MapImg_Ms=imread("Mapv4.png");
 imshow(MapImg_Ms);
 
 
