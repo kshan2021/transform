@@ -1,28 +1,49 @@
 
-selectPoints = [0 0 0 0 0 0 0 0 0 0]; %select ref points if selectPoints element is 1
-
 bVerbose = false; %display more intermediate images?
-
 if ispc %for Windows platform
     rootDir = "C:/Warwick/Autoplex/";
 else %isunix or ismac
     rootDir = "~/Autoplex/";
 end
-RefImg_Ms{1} = imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch1_main_20211010080000_20211010090000.mp4-vlcsnap-2022-02-08-10h20m30s042.jpg");
-RefImg_Ms{2} = imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch2_main_20211010080000_20211010090000.mp4-vlcsnap-2022-02-08-10h37m38s785.jpg");
-RefImg_Ms{3} = imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch3_main_20211010080001_20211010090001.mp4-vlcsnap-2022-02-08-10h38m11s392.jpg");
-RefImg_Ms{4} = imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch4_main_20211010080001_20211010090001.mp4-vlcsnap-2022-02-08-10h38m39s088.jpg");
-RefImg_Ms{5} = imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch5_main_20211010080002_20211010090002.mp4-vlcsnap-2022-02-08-10h39m35s506.jpg");
-RefImg_Ms{6} = imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch6_main_20211010080002_20211010090002.mp4-vlcsnap-2022-02-08-10h40m03s571.jpg");
-RefImg_Ms{7} = imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch7_main_20211010080003_20211010090003.mp4-vlcsnap-2022-02-08-10h40m25s335.jpg");
-RefImg_Ms{8} = imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch8_main_20211010080003_20211010090003.mp4-vlcsnap-2022-02-08-10h40m42s412.jpg");
-RefImg_Ms{9} = imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch9_main_20211010080004_20211010090004.mp4-vlcsnap-2022-02-08-10h40m57s792.jpg");
-RefImg_Ms{10}= imread(rootDir + "Data Annotation/Stills/Clear Road/NVR_ch10_main_20211010080004_20211010090004.mp4-vlcsnap-2022-02-08-10h41m14s910.jpg");
-[~, total] = size(RefImg_Ms);
+
+selectPoints = [0 0 0 0 0 0 0 0 0 0]; %select ref points if selectPoints element is 1
+%{
+%clear road without vehicle, suitable for cpselect
+imgFilename{1} = rootDir + "Data Annotation/Stills/Clear Road/NVR_ch1_main_20211010080000_20211010090000.mp4-vlcsnap-2022-02-08-10h20m30s042.jpg";
+imgFilename{2} = rootDir + "Data Annotation/Stills/Clear Road/NVR_ch2_main_20211010080000_20211010090000.mp4-vlcsnap-2022-02-08-10h37m38s785.jpg";
+imgFilename{3} = rootDir + "Data Annotation/Stills/Clear Road/NVR_ch3_main_20211010080001_20211010090001.mp4-vlcsnap-2022-02-08-10h38m11s392.jpg";
+imgFilename{4} = rootDir + "Data Annotation/Stills/Clear Road/NVR_ch4_main_20211010080001_20211010090001.mp4-vlcsnap-2022-02-08-10h38m39s088.jpg";
+imgFilename{5} = rootDir + "Data Annotation/Stills/Clear Road/NVR_ch5_main_20211010080002_20211010090002.mp4-vlcsnap-2022-02-08-10h39m35s506.jpg";
+imgFilename{6} = rootDir + "Data Annotation/Stills/Clear Road/NVR_ch6_main_20211010080002_20211010090002.mp4-vlcsnap-2022-02-08-10h40m03s571.jpg";
+imgFilename{7} = rootDir + "Data Annotation/Stills/Clear Road/NVR_ch7_main_20211010080003_20211010090003.mp4-vlcsnap-2022-02-08-10h40m25s335.jpg";
+imgFilename{8} = rootDir + "Data Annotation/Stills/Clear Road/NVR_ch8_main_20211010080003_20211010090003.mp4-vlcsnap-2022-02-08-10h40m42s412.jpg";
+imgFilename{9} = rootDir + "Data Annotation/Stills/Clear Road/NVR_ch9_main_20211010080004_20211010090004.mp4-vlcsnap-2022-02-08-10h40m57s792.jpg";
+imgFilename{10}= rootDir + "Data Annotation/Stills/Clear Road/NVR_ch10_main_20211010080004_20211010090004.mp4-vlcsnap-2022-02-08-10h41m14s910.jpg";
+%}
+
+%camera images with vehicles, to test performance of transformation
+imgFilename{1} = rootDir + "Data Annotation/Datasets/e0804-dataset/Annotated-Manual-Ground-Truth-e0804/2021-06-05-1100/NVR_ch1_main_20210605110000_20210605120000-vlcsnap-2021-07-21-11h19m24s383.jpg";
+imgFilename{2} = rootDir + "Data Annotation/Datasets/e0804-dataset/Annotated-Manual-Ground-Truth-e0804/2021-06-05-1100/NVR_ch2_main_20210605110000_20210605120000-vlcsnap-2021-07-21-11h17m52s327.jpg";
+imgFilename{3} = rootDir + "Data Annotation/Datasets/e0804-dataset/Annotated-Manual-Ground-Truth-e0804/2021-06-05-1100/NVR_ch3_main_20210605110001_20210605120001-vlcsnap-2021-07-21-11h16m39s324.jpg";
+imgFilename{4} = rootDir + "Data Annotation/Datasets/e0804-dataset/Annotated-Manual-Ground-Truth-e0804/2021-06-05-1100/NVR_ch4_main_20210605110001_20210605120001-vlcsnap-2021-07-21-11h15m33s743.jpg";
+imgFilename{5} = rootDir + "Data Annotation/Datasets/e0804-dataset/Annotated-Manual-Ground-Truth-e0804/2021-06-05-1100/NVR_ch5_main_20210605110002_20210605120002-vlcsnap-2021-07-21-11h08m41s927.jpg";
+imgFilename{6} = rootDir + "Data Annotation/Datasets/e0804-dataset/Annotated-Manual-Ground-Truth-e0804/2021-06-05-1100/NVR_ch6_main_20210605110002_20210605120002-vlcsnap-2021-07-21-11h06m59s770.jpg";
+imgFilename{7} = rootDir + "Data Annotation/Datasets/e0804-dataset/Annotated-Manual-Ground-Truth-e0804/2021-06-05-1100/NVR_ch7_main_20210605110003_20210605120003-vlcsnap-2021-07-21-11h05m40s555.jpg";
+imgFilename{8} = rootDir + "Data Annotation/Datasets/e0804-dataset/Annotated-Manual-Ground-Truth-e0804/2021-06-05-1100/NVR_ch8_main_20210605110003_20210605120003-vlcsnap-2021-07-21-11h04m34s856.jpg";
+imgFilename{9} = rootDir + "Data Annotation/Datasets/e0804-dataset/Annotated-Manual-Ground-Truth-e0804/2021-06-05-1100/NVR_ch9_main_20210605110004_20210605120004-vlcsnap-2021-07-21-11h00m43s742.jpg";
+imgFilename{10}= rootDir + "Data Annotation/Datasets/t0824-dataset/Annotated-Manual-Ground-Truth-t0824/2021-07-15-1000/NVR_ch10_main_20210715100004_20210715110004.mp4-vlcsnap-2021-08-22-22h02m57s188.jpg";
+% ch9 ch10 images size changed after e0804 collected.
+
+[~, total] = size(imgFilename);
+
+for i=1:total
+    RefImg_Ms{i} = imread(imgFilename{i});
+end
 
 fig_map=figure('Name','Map', 'NumberTitle','off');
 MapImg_Ms=imread("Mapv4.png");
 imshow(MapImg_Ms);
+
 
 
 MapoutputView = imref2d(size(MapImg_Ms));
@@ -33,7 +54,6 @@ for i=1:total
     if bVerbose
         figure('Name', "Ref Img " + num2str(i), 'NumberTitle', 'off');
         imshow(RefImg_Ms{i});
-        title();
     end
     
     x = 1; %'' selection completed, 0 re-select, 1 new select
@@ -66,6 +86,51 @@ for i=1:total
 
         MapTfrm{i} = fitgeotrans(movingPoints, fixedPoints, 'projective'); %nonreflectivesimilarity, similarity, affine, projective
         warpedImg{i} = imwarp(RefImg_Ms{i}, MapTfrm{i}, 'outputView', MapoutputView, 'interp', 'nearest');
+
+        if isequal(movingPoints, movingPoints_old) && isequal(fixedPoints, fixedPoints_old) %cpselect completed, detect vheicle and get bounding box
+            
+            copyfile(imgFilename{i}, "~/GitHub/darknet/tmp.jpg");
+            vehicles = detectVehiclesGetCoord;
+            [numVehicles, ~]=size(vehicles);
+            for k=1:numVehicles
+                %if vehicles(k).confidence<0.5
+                %    continue;
+                %end
+                coord = vehicles(k).relative_coordinates;
+                coord.center_x = coord.center_x * RefImgSize{i}(2);
+                coord.center_y = coord.center_y * RefImgSize{i}(1);
+                coord.width = coord.width * RefImgSize{i}(2);
+                coord.height = coord.height * RefImgSize{i}(1);
+                %vehicle size
+                x1 = coord.center_x - coord.width/2;
+                x2 = coord.center_x + coord.width/2;
+                y1 = coord.center_y - coord.height/2;
+                y2 = coord.center_y + coord.height/2;
+                r=(abs(x2-x1)+abs(y2-y1))/2/2;
+                %transform x1 x2 y1 y2 to map
+                X = [x1 x1 x2 x2 coord.center_x]; Y = [y1 y2 y1 y2 coord.center_y];
+                [U V] = transformPointsForward(MapTfrm{i}, X, Y);
+                %after transform, rectangle become parallelgram in map
+                U_width = (abs(U(3)-U(1)) + abs(U(4)-U(2)))/2;
+                V_height = (abs(V(4)-V(3)) + abs(V(2)-V(1)))/2;
+                radius = (U_width+V_height)/2/2;
+                U_center = U(5); V_center = V(5);
+                RefImg_Ms{i} = insertShape(RefImg_Ms{i}, 'rectangle', [x1,y1,coord.width,coord.height], 'LineWidth', 5);
+                warpedImg{i} = insertShape(warpedImg{i}, 'FilledCircle', [U_center, V_center, radius], 'LineWidth', 5, 'color', [255 255 0]);
+            end
+            figure;
+            imshow(RefImg_Ms{i});
+            
+            %{
+            for k=1:3
+                x1 = RefImgSize{i}(2)/4*k;
+                y1 = RefImgSize{i}(1)/4*k;
+                [u1 v1] = transformPointsForward(MapTfrm{i}, x1, y1);
+                warpedImg{i} = insertShape(warpedImg{i}, 'circle', [u1, v1, 100], 'LineWidth', 5);
+            end
+            %}
+        end
+        
         if x==1 %new selection, create new figure
             fig_warped = figure('Name',"warped "+num2str(i), 'NumberTitle','off');
         else % x=0, re-select, use old figure
