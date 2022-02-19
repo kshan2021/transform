@@ -6,7 +6,7 @@ else %isunix or ismac
 end
 
 bVerbose = false; %display more intermediate images?
-bDetectBoundingBox = false; %detect and show vehicles' bounding box if true
+bDetectBoundingBox = true; %detect and show vehicles' bounding box if true
 selectPoints = [0 0 0 0 0 0 0 0 0 0]; %select ref points if selectPoints element is 1
 %{
 %clear road without vehicle, suitable for cpselect
@@ -96,7 +96,7 @@ for i=1:total
         MapTfrm{i} = fitgeotrans(movingPoints, fixedPoints, 'projective'); %nonreflectivesimilarity, similarity, affine, projective
         warpedImg{i} = imwarp(RefImg_Ms{i}, MapTfrm{i}, 'outputView', MapoutputView, 'interp', 'nearest');
 
-        if bDetectBoundingBox && bRefPointsSelctedFinished == true %cpselect completed, detect vheicle and get bounding box
+        if bDetectBoundingBox && bRefPointsSelectFinished == true %cpselect completed, detect vheicle and get bounding box
             copyfile(imgFilename{i}, "~/GitHub/darknet/tmp.jpg");
             vehicles = detectVehiclesGetCoord;
             [numVehicles, ~]=size(vehicles);
