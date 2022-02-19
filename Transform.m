@@ -152,10 +152,10 @@ for i=1:total
     end
 end
 
-%create an image with all value is 1
+%create an image with all value is 0
 imgNum = uint8(zeros(size(imbinarize(MapImg_Ms))));
-imgNum(:) = 1;
-imgNum = rgb2gray(imgNum); %greyscale image, vaue 1
+%imgNum(:) = 1;
+imgNum = rgb2gray(imgNum); %greyscale image, the pixel value will indicate how many images at this pixel is non-zero
 %binarize all refImg, and sum up
 for i=1:total
        bw = uint8(im2bw(warpedImg{i}, 0.0001)); %binary image value 0,1
@@ -163,8 +163,8 @@ for i=1:total
 end
 imgNumRGB = cat(3, imgNum, imgNum, imgNum);
 
-%average multi images
-I = uint32(MapImg_Ms);
+%average all warped map images
+I = uint32(zeros(size(MapImg_Ms)));
 for i = 1:total
     I = imadd(I, uint32(warpedImg{i})); % each pixel is 32*3 bits
 end
