@@ -32,8 +32,9 @@ imgFilename{6} = rootDir + "Data Annotation/Datasets/e0804-dataset/Annotated-Man
 imgFilename{7} = rootDir + "Data Annotation/Datasets/e0804-dataset/Annotated-Manual-Ground-Truth-e0804/2021-06-05-1100/NVR_ch7_main_20210605110003_20210605120003-vlcsnap-2021-07-21-11h05m40s555.jpg";
 imgFilename{8} = rootDir + "Data Annotation/Datasets/e0804-dataset/Annotated-Manual-Ground-Truth-e0804/2021-06-05-1100/NVR_ch8_main_20210605110003_20210605120003-vlcsnap-2021-07-21-11h04m34s856.jpg";
 imgFilename{9} = rootDir + "Data Annotation/Video Annotation/ch9_vlcsnap-2022-02-17-11h33m39s755.jpg";
-imgFilename{10}= rootDir + "Data Annotation/Datasets/t0824-dataset/Annotated-Manual-Ground-Truth-t0824s/2021-07-15-1000/NVR_ch10_main_20210715100004_20210715110004.mp4-vlcsnap-2021-08-22-22h02m57s188.jpg";
-% ch9 ch10 images size changed after e0804 collected.
+%imgFilename{10}= rootDir + "Data Annotation/Datasets/t0824-dataset/Annotated-Manual-Ground-Truth-t0824s/2021-07-15-1000/NVR_ch10_main_20210715100004_20210715110004.mp4-vlcsnap-2021-08-22-22h02m57s188.jpg";
+imgFilename{10}= rootDir + "Data Annotation/Datasets/t0824-dataset/Annotated-Manual-Ground-Truth-t0824s/2021-07-15-1000/NVR_ch10_main_20210715100004_20210715110004.mp4-vlcsnap-2021-08-22-22h06m25s943.jpg";
+% ch9 ch10 images size changed after e0804 collected. 2021-06-05 is old size, 2021-07-15 is new size
 
 [~, total] = size(imgFilename);
 
