@@ -57,11 +57,12 @@ for i=1:total
         imshow(RefImg_Ms{i});
     end
     
-    x = 1; %'' selection completed, 0 re-select, 1 new select
-    while ~isempty(x) %re-select ref points until user press Enter or Space
+    bRefPointsSelectFinished = false; %0 not yet select, need to select ref points. 1 selected but need to re-select, 2 selection is completed
+    bFigureCreated = false; %use old figure if it's already created before
+    while ~bRefPointsSelectFinished %re-select ref points until user press Enter or Space
+        clear movingPoints fixedPoints;
         movingPointsFile = "movingPoints_ch"+num2str(i) + ".mat";
         fixedPointsFile = "fixedPoints_ch"+num2str(i) + ".mat";
-        clear movingPoints fixedPoints;
         if isfile(movingPointsFile) && isfile(fixedPointsFile) %ref points already available
             if selectPoints(i) %need to re-select ref points
                 movingPoints_old = load(movingPointsFile).movingPoints;
@@ -73,23 +74,28 @@ for i=1:total
                 if ~isequal(fixedPoints, fixedPoints_old)
                     save(fixedPointsFile, 'fixedPoints')
                 end
+                if ((movingPoints_old == movingPoints) & (fixedPoints_old == fixedPoints))
+                    bRefPointsSelectFinished = true; %Ref points not changed, selection is completed
+                else
+                    bRefPointsSelectFinished = false; %Ref points changed, need to re-select
+                end
             else %do not re-select ref points
                 movingPoints = load(movingPointsFile).movingPoints;
                 fixedPoints = load(fixedPointsFile).fixedPoints;
-                movingPoints_old = movingPoints; fixedPoints_old = fixedPoints; %no need to re-select
+                bRefPointsSelectFinished = true; %selection is completed
             end
-        else
+        else %Ref points not available, need to select new Ref points
             [movingPoints, fixedPoints] = cpselect(RefImg_Ms{i}, MapImg_Ms, 'Wait', true);
             save(movingPointsFile, 'movingPoints')
             save(fixedPointsFile, 'fixedPoints')
             movingPoints_old = [0 0]; fixedPoints_old = [0 0]; %new selection, will ask for re-select to confirm
+            bRefPointsSelectFinished = false; %need to re-select
         end
 
         MapTfrm{i} = fitgeotrans(movingPoints, fixedPoints, 'projective'); %nonreflectivesimilarity, similarity, affine, projective
         warpedImg{i} = imwarp(RefImg_Ms{i}, MapTfrm{i}, 'outputView', MapoutputView, 'interp', 'nearest');
 
-        if bDetectBoundingBox && isequal(movingPoints, movingPoints_old) && isequal(fixedPoints, fixedPoints_old) %cpselect completed, detect vheicle and get bounding box
-            
+        if bDetectBoundingBox && bRefPointsSelctedFinished == true %cpselect completed, detect vheicle and get bounding box
             copyfile(imgFilename{i}, "~/GitHub/darknet/tmp.jpg");
             vehicles = detectVehiclesGetCoord;
             [numVehicles, ~]=size(vehicles);
@@ -121,36 +127,19 @@ for i=1:total
             end
             figure;
             imshow(RefImg_Ms{i});
-            
-            %{
-            for k=1:3
-                x1 = RefImgSize{i}(2)/4*k;
-                y1 = RefImgSize{i}(1)/4*k;
-                [u1 v1] = transformPointsForward(MapTfrm{i}, x1, y1);
-                warpedImg{i} = insertShape(warpedImg{i}, 'circle', [u1, v1, 100], 'LineWidth', 5);
-            end
-            %}
         end
         
-        if x==1 %new selection, create new figure
+        if bFigureCreated == false %new selection, create new figure
             fig_warped = figure('Name',"warped "+num2str(i), 'NumberTitle','off');
-        else % x=0, re-select, use old figure
-            figure(fig_warped);
-        end
-        imshow(warpedImg{i});
-        if x==1
             fig_mapped = figure('Name',"mapped "+num2str(i), 'NumberTitle','off');
-        else
-            figure(fig_mapped)
-        end
-        imshowpair(MapImg_Ms, warpedImg{i}, "falsecolor");
-
-        if bVerbose
-            if x==1
+            if bVerbose
                 fig_accuracy = figure('Name',"Current Transform Accuracy "+num2str(i), 'NumberTitle','off');
-            else
-                figure(fig_accuracy)
             end
+        end
+        figure(fig_warped); imshow(warpedImg{i});
+        figure(fig_mapped); imshowpair(MapImg_Ms, warpedImg{i}, "falsecolor");
+        if bVerbose
+            figure(fig_accuracy);
             imshowpair(MapImg_Ms, warpedImg{i}, "falsecolor");
             [TedX, TedY] = transformPointsForward(MapTfrm{i}, [0 RefImgSize{i}(2)], [0 RefImgSize{i}(1)]);
             TedX = max(0, TedX); TedY = max(0, TedY);
@@ -158,18 +147,7 @@ for i=1:total
             plot(TedX, TedY, 'go', "MarkerFaceColor", "g")
             axis([min(TedX(1), TedX(2)), max(TedX(1), TedX(2)) min(TedY(1), TedY(2)) max(TedY(1), TedY(2))])
         end
-
-        %if selectPoints(i) %need to re-select ref points
-        %    x=input("press Enter or Space to continue, any other letter to re-select reference points...", 's');
-        %else
-        %    x='';
-        %end
-        
-        if isequal(movingPoints, movingPoints_old) && isequal(fixedPoints, fixedPoints_old)
-            x=''; %selection completed
-        else
-            x=0; %need to select again
-        end        
+        bFigureCreated = true; %use old figure in next loop
     end
 end
 
