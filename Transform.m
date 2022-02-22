@@ -7,7 +7,7 @@ end
 
 bVerbose = false; %display more intermediate images?
 bDetectBoundingBox = true; %detect and show vehicles' bounding box if true
-selectPoints = [0 0 0 0 0 0 0 0 0 0]; %select ref points if selectPoints element is 1
+selectPoints = [0 0 0 0 0 0 0 0 0 0]; % call cpselect to edit (or create) ref points if 1
 %{
 %clear road without vehicle, suitable for cpselect
 imgFilename{1} = rootDir + "Data Annotation/Stills/Clear Road/NVR_ch1_main_20211010080000_20211010090000.mp4-vlcsnap-2022-02-08-10h20m30s042.jpg";
@@ -36,8 +36,9 @@ imgFilename{9} = rootDir + "Data Annotation/Video Annotation/ch9_vlcsnap-2022-02
 imgFilename{10}= rootDir + "Data Annotation/Datasets/t0824-dataset/Annotated-Manual-Ground-Truth-t0824s/2021-07-15-1000/NVR_ch10_main_20210715100004_20210715110004.mp4-vlcsnap-2021-08-22-22h06m25s943.jpg";
 % ch9 ch10 images size changed after e0804 collected. 2021-06-05 is old size, 2021-07-15 is new size
 
-[~, total] = size(imgFilename);
+[~, total] = size(imgFilename); %total number of cameras
 
+%read camera images
 for i=1:total
     RefImg_Ms{i} = imread(imgFilename{i});
 end
@@ -45,8 +46,6 @@ end
 fig_map=figure('Name','Map', 'NumberTitle','off');
 MapImg_Ms=imread("Mapv4.png");
 imshow(MapImg_Ms);
-
-
 
 MapoutputView = imref2d(size(MapImg_Ms));
 
@@ -58,14 +57,14 @@ for i=1:total
         imshow(RefImg_Ms{i});
     end
     
-    bRefPointsSelectFinished = false; %0 not yet select, need to select ref points. 1 selected but need to re-select, 2 selection is completed
+    bRefPointsSelectFinished = false; %false: Ref Points need to be re-selected and fine-tuned. true: Ref Points finalised.
     bFigureCreated = false; %use old figure if it's already created before
-    while ~bRefPointsSelectFinished %re-select ref points until user press Enter or Space
+    while ~bRefPointsSelectFinished %re-select ref points until user didn't change anything in cpselect
         clear movingPoints fixedPoints;
         movingPointsFile = "movingPoints_ch"+num2str(i) + ".mat";
         fixedPointsFile = "fixedPoints_ch"+num2str(i) + ".mat";
         if isfile(movingPointsFile) && isfile(fixedPointsFile) %ref points already available
-            if selectPoints(i) %need to re-select ref points
+            if selectPoints(i) %need to edit ref points
                 movingPoints_old = load(movingPointsFile).movingPoints;
                 fixedPoints_old = load(fixedPointsFile).fixedPoints;
                 [movingPoints, fixedPoints] = cpselect(RefImg_Ms{i}, MapImg_Ms, movingPoints_old, fixedPoints_old, 'Wait', true);
