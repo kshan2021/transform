@@ -6,7 +6,7 @@ else %isunix or ismac
 end
 
 bVerbose = false; %display more intermediate images?
-bDetectBoundingBox = true; %detect and show vehicles' bounding box if true
+bDetectBoundingBox = false; %detect and show vehicles' bounding box if true
 selectPoints = [0 0 0 0 0 0 0 0 0 0]; % call cpselect to edit (or create) ref points if 1
 %{
 %clear road without vehicle, suitable for cpselect
@@ -52,13 +52,16 @@ MapoutputView = imref2d(size(MapImg_Ms));
 for i=1:total
     RefImgSize{i} = size(RefImg_Ms{i});
 
+	fig_warped = figure('Name',"warped "+num2str(i), 'NumberTitle','off');
+	fig_mapped = figure('Name',"mapped "+num2str(i), 'NumberTitle','off');
+
     if bVerbose
+        fig_accuracy = figure('Name',"Current Transform Accuracy "+num2str(i), 'NumberTitle','off');
         figure('Name', "Ref Img " + num2str(i), 'NumberTitle', 'off');
         imshow(RefImg_Ms{i});
     end
     
     bRefPointsSelectFinished = false; %false: Ref Points need to be re-selected and fine-tuned. true: Ref Points finalised.
-    bFigureCreated = false; %use old figure if it's already created before
     while ~bRefPointsSelectFinished %re-select ref points until user didn't change anything in cpselect
         clear movingPoints fixedPoints;
         movingPointsFile = "movingPoints_ch"+num2str(i) + ".mat";
@@ -128,14 +131,6 @@ for i=1:total
             figure;
             imshow(RefImg_Ms{i});
         end
-        
-        if bFigureCreated == false %new selection, create new figure
-            fig_warped = figure('Name',"warped "+num2str(i), 'NumberTitle','off');
-            fig_mapped = figure('Name',"mapped "+num2str(i), 'NumberTitle','off');
-            if bVerbose
-                fig_accuracy = figure('Name',"Current Transform Accuracy "+num2str(i), 'NumberTitle','off');
-            end
-        end
         figure(fig_warped); imshow(warpedImg{i});
         figure(fig_mapped); imshowpair(MapImg_Ms, warpedImg{i}, "falsecolor");
         if bVerbose
@@ -147,7 +142,6 @@ for i=1:total
             plot(TedX, TedY, 'go', "MarkerFaceColor", "g")
             axis([min(TedX(1), TedX(2)), max(TedX(1), TedX(2)) min(TedY(1), TedY(2)) max(TedY(1), TedY(2))])
         end
-        bFigureCreated = true; %use old figure in next loop
     end
 end
 
